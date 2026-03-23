@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "behavry-context-audit"
+version = "0.1.0"
+description = "Measure the context window cost of your MCP integrations"
+authors = ["Behavry <oss@behavry.ai>"]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/Behavry-ai/context-audit"
+repository = "https://github.com/Behavry-ai/context-audit"
+keywords = ["mcp", "context-window", "ai-agents", "tokens", "audit", "governance"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+]
+packages = [{include = "context_audit"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+httpx = ">=0.27.0"
+click = ">=8.0"
+rich = ">=13.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+pytest-asyncio = ">=0.24"
+ruff = ">=0.8"
+
+[tool.poetry.group.exact.dependencies]
+tiktoken = ">=0.7"
+
+[tool.poetry.scripts]
+context-audit = "context_audit.cli:main"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
