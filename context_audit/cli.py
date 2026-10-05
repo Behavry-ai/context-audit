@@ -20,7 +20,6 @@ def main() -> None:
 @main.command()
 @click.option("--config", "config_path", type=click.Path(), help="Path to MCP config file")
 @click.option("--server", "server_urls", multiple=True, help="MCP server URL (repeatable)")
-@click.option("--proxy", "proxy_url", help="Behavry proxy URL (reads upstream server registry)")
 @click.option("--format", "fmt", default="terminal", type=click.Choice(["terminal", "markdown", "html", "json"]))
 @click.option("--output", "output_path", type=click.Path(), help="Write report to file")
 @click.option("--model-price", default=3.0, type=float, help="Token price per 1M input tokens")
@@ -31,7 +30,6 @@ def main() -> None:
 def scan(
     config_path: str | None,
     server_urls: tuple[str, ...],
-    proxy_url: str | None,
     fmt: str,
     output_path: str | None,
     model_price: float,
