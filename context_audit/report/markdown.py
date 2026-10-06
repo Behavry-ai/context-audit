@@ -17,8 +17,8 @@ def render_markdown(report: AnalysisReport) -> str:
     # Summary
     lines.append("## Summary")
     lines.append("")
-    lines.append(f"| Metric | Value |")
-    lines.append(f"|--------|-------|")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
     lines.append(f"| MCP servers scanned | {len(report.servers)} |")
     lines.append(f"| Total tools discovered | {report.total_tools} |")
     lines.append(f"| Total schema tokens | {report.total_tokens:,} |")
@@ -88,7 +88,10 @@ def render_markdown(report: AnalysisReport) -> str:
     # Footer
     lines.append("---")
     lines.append("")
-    lines.append("**[Context Gate by Behavry](https://behavry.ai/context-gate)** — Policy-gated schema governance for MCP.")
+    lines.append(
+        "**[Context Gate by Behavry](https://behavry.ai/context-gate)** — "
+        "Policy-gated schema governance for MCP."
+    )
     lines.append("")
 
     return "\n".join(lines)

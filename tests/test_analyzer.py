@@ -9,7 +9,11 @@ def _make_tool(name: str, desc: str = "A tool", schema_size: int = 100) -> ToolS
         name=name,
         description=desc,
         input_schema={"type": "object", "properties": {"x": {"type": "string"}}},
-        raw={"name": name, "description": desc, "inputSchema": {"type": "object", "properties": {"x" * schema_size: {"type": "string"}}}},
+        raw={
+            "name": name,
+            "description": desc,
+            "inputSchema": {"type": "object", "properties": {"x" * schema_size: {"type": "string"}}},
+        },
     )
 
 
