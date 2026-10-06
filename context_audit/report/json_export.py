@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from typing import Any
 
+from context_audit import __version__
 from context_audit.models import AnalysisReport
 
 
@@ -19,7 +19,7 @@ def _report_to_dict(report: AnalysisReport) -> dict[str, Any]:
     return {
         "meta": {
             "tool": "behavry-context-audit",
-            "version": "0.1.0",
+            "version": __version__,
             "timestamp": report.scan_timestamp,
             "token_method": report.token_method,
         },

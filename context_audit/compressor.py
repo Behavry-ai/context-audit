@@ -5,7 +5,6 @@ Does not modify anything — calculates projected token counts only.
 """
 from __future__ import annotations
 
-import json
 from typing import Any
 
 from context_audit.tokens import estimate_tokens

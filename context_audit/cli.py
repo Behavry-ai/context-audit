@@ -20,7 +20,6 @@ def main() -> None:
 @main.command()
 @click.option("--config", "config_path", type=click.Path(), help="Path to MCP config file")
 @click.option("--server", "server_urls", multiple=True, help="MCP server URL (repeatable)")
-@click.option("--proxy", "proxy_url", help="Behavry proxy URL (reads upstream server registry)")
 @click.option("--format", "fmt", default="terminal", type=click.Choice(["terminal", "markdown", "html", "json"]))
 @click.option("--output", "output_path", type=click.Path(), help="Write report to file")
 @click.option("--model-price", default=3.0, type=float, help="Token price per 1M input tokens")
@@ -31,7 +30,6 @@ def main() -> None:
 def scan(
     config_path: str | None,
     server_urls: tuple[str, ...],
-    proxy_url: str | None,
     fmt: str,
     output_path: str | None,
     model_price: float,
@@ -131,9 +129,9 @@ def ci(
     timeout: int,
 ) -> None:
     """CI-friendly mode. Returns exit code 1 if thresholds exceeded."""
+    from context_audit.analyzer import ContextAnalyzer
     from context_audit.config_parser import parse_config
     from context_audit.scanner import MCPScanner
-    from context_audit.analyzer import ContextAnalyzer
 
     try:
         servers = parse_config(config_path)
@@ -210,7 +208,12 @@ def compare(before: str, after: str, fmt: str) -> None:
 
         sign = "+" if delta >= 0 else ""
         color = "red" if delta > 0 else "green"
-        table.add_row("Total tokens", f"{b_tokens:,}", f"{a_tokens:,}", f"[{color}]{sign}{delta:,} ({sign}{delta_pct:.1f}%)[/{color}]")
+        table.add_row(
+            "Total tokens",
+            f"{b_tokens:,}",
+            f"{a_tokens:,}",
+            f"[{color}]{sign}{delta:,} ({sign}{delta_pct:.1f}%)[/{color}]",
+        )
         table.add_row("Total tools", str(b_tools), str(a_tools), str(a_tools - b_tools))
         table.add_row("Destructive tools", str(b_destructive), str(a_destructive), str(a_destructive - b_destructive))
 
@@ -224,9 +227,9 @@ def compare(before: str, after: str, fmt: str) -> None:
             "delta_pct": round(delta_pct, 1),
         }, indent=2))
     else:
-        click.echo(f"# Context Audit Comparison\n")
-        click.echo(f"| Metric | Before | After | Delta |")
-        click.echo(f"|--------|--------|-------|-------|")
+        click.echo("# Context Audit Comparison\n")
+        click.echo("| Metric | Before | After | Delta |")
+        click.echo("|--------|--------|-------|-------|")
         sign = "+" if delta >= 0 else ""
         click.echo(f"| Tokens | {b_tokens:,} | {a_tokens:,} | {sign}{delta:,} ({sign}{delta_pct:.1f}%) |")
         click.echo(f"| Tools | {b_tools} | {a_tools} | {a_tools - b_tools} |")

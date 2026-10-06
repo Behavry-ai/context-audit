@@ -39,7 +39,10 @@ def render_terminal(report: AnalysisReport, verbose: bool = False) -> None:
         console.print(f"  Servers with errors:            {errored:>6}", style="red")
     console.print(f"  Total tools discovered:         {report.total_tools:>6}")
     console.print(f"  Total schema tokens loaded:     {report.total_tokens:>6,}")
-    console.print(f"  Estimated monthly token cost:   ${report.monthly_cost_estimate:>8,.0f}  (at ${report.model_price}/1M input tokens)")
+    console.print(
+        f"  Estimated monthly token cost:   ${report.monthly_cost_estimate:>8,.0f}"
+        f"  (at ${report.model_price}/1M input tokens)"
+    )
     risk_color = RISK_COLORS.get(report.risk_score, "white")
     console.print(f"  Risk score:                     [{risk_color}]{report.risk_score.upper()}[/{risk_color}]")
 

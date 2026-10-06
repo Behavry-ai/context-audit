@@ -1,10 +1,9 @@
 """Tests for MCP config file parser."""
 import json
-import tempfile
-from pathlib import Path
 
-from context_audit.config_parser import parse_config, ConfigError
 import pytest
+
+from context_audit.config_parser import ConfigError, parse_config
 
 
 class TestConfigParser:

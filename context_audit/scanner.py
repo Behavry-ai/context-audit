@@ -143,12 +143,7 @@ class MCPScanner:
             await proc.stdin.drain()
 
             # Read initialize response
-            init_line = await asyncio.wait_for(proc.stdout.readline(), timeout=self.timeout)
-            if init_line:
-                try:
-                    json.loads(init_line)
-                except json.JSONDecodeError:
-                    pass
+            await self._read_response(proc.stdout, request_id=1)
 
             # Send initialized notification
             notif = {"jsonrpc": "2.0", "method": "notifications/initialized"}
@@ -165,11 +160,14 @@ class MCPScanner:
             await proc.stdin.drain()
 
             # Read tools/list response
-            line = await asyncio.wait_for(proc.stdout.readline(), timeout=self.timeout)
-            if not line:
-                raise RuntimeError(f"No response from {server.name}")
+            data = await self._read_response(proc.stdout, request_id=2)
+            if data is None:
+                raise RuntimeError(f"No tools/list response from {server.name}")
 
-            data = json.loads(line)
+            if "error" in data:
+                err = data["error"]
+                raise RuntimeError(f"tools/list failed: {err.get('message', err)}")
+
             return self._parse_tools_response(data)
         finally:
             try:
@@ -177,6 +175,32 @@ class MCPScanner:
                 await asyncio.wait_for(proc.wait(), timeout=5.0)
             except Exception:
                 proc.kill()
+
+    async def _read_response(
+        self,
+        stdout: asyncio.StreamReader,
+        request_id: int,
+    ) -> dict[str, Any] | None:
+        """Read stdout lines until the JSON-RPC response with ``request_id`` arrives.
+
+        Servers may interleave notifications (e.g. ``notifications/tools/list_changed``)
+        and non-JSON log output with their responses, so matching on ``id`` is the only
+        reliable way to pair a response with its request.
+        """
+        deadline = time.monotonic() + self.timeout
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return None
+            line = await asyncio.wait_for(stdout.readline(), timeout=remaining)
+            if not line:
+                return None
+            try:
+                msg = json.loads(line)
+            except json.JSONDecodeError:
+                continue  # server log line on stdout
+            if isinstance(msg, dict) and msg.get("id") == request_id:
+                return msg
 
     def _parse_tools_response(self, data: dict[str, Any]) -> list[ToolSchema]:
         """Parse a tools/list JSON-RPC response into ToolSchema objects."""
